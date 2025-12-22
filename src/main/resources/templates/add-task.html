@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Task</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .nav a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .form-container {
+            width: 40%;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #999;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .flash-success { color: green; }
+        .flash-error { color: red; }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="brand">Task Reminder App</div>
+    <div class="nav">
+        <a href="/api/tasks/tasks">Task List</a>
+        <a href="/api/tasks/add">Add Task</a>
+    </div>
+</div>
+
+<div class="form-container">
+    <h2>Add New Task</h2>
+
+    <p><a href="/api/tasks/tasks">← Back to Task List</a></p>
+
+    <div th:if="${successMessage}" class="flash-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="flash-error" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/api/tasks/add}" th:object="${task}" method="post">
+
+        <label>Title:</label>
+        <input type="text" th:field="*{title}" required>
+
+        <label>Description:</label>
+        <textarea th:field="*{description}" rows="3"></textarea>
+
+        <label>Due Date:</label>
+        <input type="date" th:field="*{dueDate}" required th:attr="min=${#dates.format(#dates.createNow(),'yyyy-MM-dd')}">
+
+        <label>Status:</label>
+        <select th:field="*{status}" required>
+            <option value="">-- Select --</option>
+            <option th:each="s : ${T(com.tracker.app.enums.TaskStatus).values()}"
+                    th:value="${s}"
+                    th:text="${s}">
+            </option>
+        </select>
+
+        <label>Priority:</label>
+        <select th:field="*{priority}" required>
+            <option value="">-- Select --</option>
+            <option th:each="p : ${T(com.tracker.app.enums.TaskPriority).values()}"
+                    th:value="${p}"
+                    th:text="${p}">
+            </option>
+        </select>
+
+        <button type="submit">Save Task</button>
+        <a href="view-task.html"></a>
+    </form>
+</div>
+
+</body>
+</html>

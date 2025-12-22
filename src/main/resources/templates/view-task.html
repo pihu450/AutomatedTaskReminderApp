@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Details</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="header">
+    <div class="brand">Task Reminder App</div>
+    <div class="nav">
+        <a th:href="@{/api/tasks/tasks}" class="btn">Back to List</a>
+        <a th:href="@{|/api/tasks/edit/${task.id}|}" class="btn">Edit</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Task Details</h2>
+
+    <p><strong>Title :</strong> <span th:text="${task.title}"></span></p>
+    <p><strong>Description :</strong> <span th:text="${task.description}"></span></p>
+    <p><strong>Due Date :</strong> <span th:text="${task.dueDate}"></span></p>
+
+    <p><strong>Status :</strong>
+        <span th:text="${task.status}"
+              th:class="${task.status == 'DONE'} ? 'status-done' : 'status-pending'">
+        </span>
+    </p>
+
+    <p><strong>Priority :</strong>
+        <span th:text="${task.priority}"
+              th:class="${task.priority == 'HIGH'} ? 'badge badge-high' :
+                        (task.priority == 'MEDIUM' ? 'badge badge-medium' : 'badge badge-low')">
+        </span>
+    </p>
+
+    <p><strong>Created At :</strong>
+        <span th:text="${task.createdAt}"></span>
+    </p>
+</div>
+
+</body>
+</html>
