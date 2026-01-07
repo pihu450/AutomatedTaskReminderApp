@@ -1,37 +1,25 @@
-/* ===============================
-   GLOBAL LAYOUT
-================================ */
-body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(135deg, #eef2f7, #dfe7f3);
+/* ================= RESET ================= */
+* {
     margin: 0;
-    padding: 40px;
-    color: #333;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
 }
 
-/* ===============================
-   MAIN CONTAINER
-================================ */
+/* ================= PAGE ================= */
+body {
+    background: linear-gradient(135deg, #eef2f7, #dfe7f3);
+    padding: 30px;
+}
+
+/* ================= CONTAINER ================= */
 .container {
-    max-width: 1100px;
+    max-width: 1300px;
     margin: auto;
     background: #ffffff;
     padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Fade animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    border-radius: 18px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
 }
 
 /* ===============================
@@ -44,181 +32,313 @@ body {
     margin-bottom: 25px;
     letter-spacing: 0.8px;
     text-align: center;
+    margin-bottom: 25px;
+    color: #1e3a8a;
 }
 
-/* ===============================
-   FLASH MESSAGES
-================================ */
-.flash {
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    font-size: 14px;
-}
-
-.flash-success {
-    background: #dcfce7;
-    color: #166534;
-    border: 1px solid #86efac;
-}
-
-.flash-error {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
-}
-
-/* ===============================
-   FILTER SECTION
-================================ */
+/* ================= FILTERS ================= */
 .filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
+    margin-bottom: 25px;
     align-items: center;
-    margin-bottom: 20px;
-}
-
-.filters label {
-    font-weight: 600;
-    font-size: 14px;
 }
 
 .filter-input {
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
     border: 1px solid #cbd5e1;
-    font-size: 14px;
-    outline: none;
+    min-width: 150px;
 }
 
-.filter-input:focus {
-    border-color: #2563eb;
-}
-
-/* Small text */
-.small {
-    font-size: 13px;
-}
-
-/* ===============================
-   BUTTONS
-================================ */
+/* ================= BUTTONS ================= */
 .btn {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #2563eb;
+    padding: 8px 16px;
+    border-radius: 8px;
     color: white;
-    border-radius: 6px;
     text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s ease;
+    border: none;
 }
 
-.btn:hover {
-    background: #1e40af;
-}
+.btn-primary   { background:#2563eb; }
+.btn-success   { background:#16a34a; }
+.btn-secondary { background:#64748b; }
+.btn:hover { opacity: 0.9; }
 
-.btn-primary {
-    background: #16a34a;
-}
-
-.btn-primary:hover {
-    background: #15803d;
-}
-
-/* ===============================
-   TASK TABLE
-================================ */
+/* ================= TABLE ================= */
 .task-table {
     width: 100%;
-    margin-top: 15px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid #cbd5e1;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
     border-collapse: collapse;
+    margin-top: 25px;
 }
 
-/* Table header */
 .task-table th {
-    background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+    background: linear-gradient(90deg,#1e3a8a,#3b82f6);
     color: white;
     padding: 14px;
-    font-size: 15px;
     text-align: left;
-    letter-spacing: 0.5px;
 }
 
-/* Table data cells */
 .task-table td {
-    padding: 12px 14px;
-    font-size: 14px;
-    color: #444;
+    padding: 12px;
     border-bottom: 1px solid #e5e7eb;
 }
 
-/* Zebra rows */
-.task-table tbody tr:nth-child(odd) {
-    background: #f9fbff;
-}
-
-/* Hover effect */
-.task-table tbody tr:hover {
-    background: #e8f0ff;
-    transition: 0.2s ease-in-out;
-}
-
-/* Remove border from last row */
-.task-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-/* ===============================
-   ACTION LINKS
-================================ */
-.task-table a {
+.actions a {
+    margin-right: 6px;
+    font-weight: 600;
     color: #2563eb;
     text-decoration: none;
-    font-weight: 500;
 }
 
-.task-table a:hover {
+.actions a:hover {
     text-decoration: underline;
 }
 
-/* ===============================
-   STATUS COLORS (OPTIONAL)
-================================ */
-.status-PENDING {
+/* ================= CALENDAR ================= */
+/* Hide calendar & selected tasks initially */
+.calendar-wrapper {
+    max-width: 780px;
+    margin: 20px auto;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-10px);
+    transition: all 0.35s ease;
+}
+
+/* Open state */
+.calendar-wrapper.open {
+    max-height: 2000px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.selected-date-box {
+    display: none;
+}
+
+/* Badges */
+.badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    margin-left: 6px;
+}
+
+/* Priority badges */
+.priority-HIGH { background: #dc2626; }
+.priority-MEDIUM { background: #f59e0b; }
+.priority-LOW { background: #16a34a; }
+
+/* Status badges */
+.status-DONE { background: #16a34a; }
+.status-PENDING { background: #f59e0b; }
+.status-IN_PROGRESS { background: #2563eb; }
+
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.calendar-header button {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.calendar-fix .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 700;
+    margin: 15px 0 10px;
+    color: #1e3a8a;
+}
+
+/* 🔥 MAIN GRID */
+.calendar-fix .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+    min-height: 420px;
+}
+
+.calendar-fix .calendar-day {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 8px;
+    min-height: 110px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s ease;
+}
+
+.calendar-fix .calendar-day:hover {
+    background: #f1f5f9;
+}
+
+.calendar-fix .calendar-day strong {
+    display: block;
+    text-align: right;
+    font-weight: 700;
+    color: #334155;
+}
+
+/* TODAY */
+.calendar-fix .calendar-day.today {
+    border: 2px solid #2563eb;
+    background: #eef2ff;
+}
+
+/* TASK INSIDE CALENDAR */
+.calendar-fix .cal-task {
+    margin-top: 4px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* PRIORITY COLORS */
+.calendar-fix .cal-task.HIGH   { background: #dc2626; }
+.calendar-fix .cal-task.MEDIUM { background: #f59e0b; }
+.calendar-fix .cal-task.LOW    { background: #16a34a; }
+
+/* ================= SELECTED DATE ================= */
+
+.selected-date-box h3 {
+    margin-bottom: 10px;
+    color: #1e3a8a;
+}
+
+.selected-date-box ul {
+    list-style: none;
+}
+
+.selected-date-box li {
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.selected-date-box li.HIGH {
+    background: #fee2e2;
+    color: #7f1d1d;
+}
+
+.selected-date-box li.MEDIUM {
+    background: #fef3c7;
     color: #92400e;
-    font-weight: bold;
 }
 
-.status-DONE {
+.selected-date-box li.LOW {
+    background: #dcfce7;
     color: #166534;
-    font-weight: bold;
 }
 
-/* ===============================
-   RESPONSIVE (MOBILE)
-================================ */
-@media (max-width: 768px) {
-    .filters {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .container {
-        padding: 20px;
-    }
-
-    .task-table th,
-    .task-table td {
-        font-size: 13px;
-        padding: 10px;
-    }
+/* ================= LEGEND ================= */
+.calendar-legend {
+    display: flex;
+    gap: 12px;
+    margin: 10px 0 15px;
 }
+
+.legend {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+}
+
+.legend.high   { background: #dc2626; }
+.legend.medium { background: #f59e0b; }
+.legend.low    { background: #16a34a; }
+
+/* ================= PAGINATION ================= */
+.pagination {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* Selected date task meta */
+.selected-date-box li .meta {
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Status color hint */
+.selected-date-box li .meta b {
+    font-weight: 700;
+}
+/* ===== BADGES (Selected Date Tasks) ===== */
+
+.selected-date-box .badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* ================= TASK DETAILS PAGE ================= */
+
+.task-details-wrapper {
+    max-width: 800px;          /* 🔹 control width */
+    margin: 40px auto;         /* center horizontally */
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+}
+
+.task-details-wrapper h2 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 25px;
+}
+
+/* label + value alignment */
+.task-details-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-size: 16px;
+}
+
+.task-details-row strong {
+    color: #0f172a;
+}
+
+/* buttons alignment */
+.task-details-actions {
+    margin-top: 25px;
+    text-align: center;
+}
+
+
+

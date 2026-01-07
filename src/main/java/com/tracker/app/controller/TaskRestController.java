@@ -1,9 +1,12 @@
 package com.tracker.app.controller;
 
+import com.tracker.app.dto.OtpRequest;
 import com.tracker.app.entity.Task;
+import com.tracker.app.entity.User;
 import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.enums.TaskStatus;
 import com.tracker.app.service.TaskService;
+import com.tracker.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,19 +25,35 @@ import java.util.Optional;
 public class TaskRestController {
 
     private final TaskService taskService;
-
+    private final UserService userService;
     @Autowired
-    public TaskRestController(TaskService taskService) {
+    public TaskRestController(TaskService taskService,UserService userService) {
         this.taskService = taskService;
+        this.userService = userService;
     }
 
-    // PAGINATION
+    // ✅ GET ALL + FILTER + PAGINATION
     @GetMapping
-    public ResponseEntity<Page<Task>> getAll(Pageable pageable) {
-        return ResponseEntity.ok(taskService.findAll(pageable));
+    public ResponseEntity<Page<Task>> getTasks(
+            Pageable pageable,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) TaskStatus status,
+            @RequestParam(required = false) TaskPriority priority,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate) {
+
+        Page<Task> taskPage = taskService.filterTasks(
+                keyword,
+                status,
+                priority,
+                dueDate,
+                pageable
+        );
+
+        return ResponseEntity.ok(taskPage);
     }
 
-    // GET BY ID
+    // ✅ GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<Task> getById(@PathVariable Long id) {
         return taskService.findById(id)
@@ -42,22 +61,23 @@ public class TaskRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
-
-    // CREATE
-    @PostMapping("/add")
+    // ✅ CREATE
+    @PostMapping
     public ResponseEntity<Task> create(@RequestBody Task task) {
         task.setCreatedAt(LocalDateTime.now());
-        Task saved = taskService.addTask(task);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(taskService.saveTask(task));
     }
 
-    // UPDATE
+    // ✅ UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<Task> update(@PathVariable Long id,
-                                       @RequestBody Task task) {
+    public ResponseEntity<Task> update(
+            @PathVariable Long id,
+            @RequestBody Task task) {
 
         Optional<Task> existing = taskService.findById(id);
+
         if (existing.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -65,46 +85,33 @@ public class TaskRestController {
         task.setId(id);
         task.setCreatedAt(existing.get().getCreatedAt());
 
-        Task updated = taskService.updateTask(task);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(taskService.saveTask(task));
     }
 
-    // DELETE
+    // ✅ DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+
+        if (taskService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
         taskService.deleteTask(id);
-        return ResponseEntity.ok("Task deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 
-
-    // FILTER BY STATUS
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<Task>> getByStatus(@PathVariable TaskStatus status) {
-        return ResponseEntity.ok(
-                taskService.findByStatus(status)
-        );
+    @PostMapping("/userRegister")
+    public ResponseEntity<?> registerApi(@RequestBody User user){
+        try{
+            userService.register(user);
+            return ResponseEntity.ok("OTP sent to your email");
+        }catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-
-
-    // FILTER BY PRIORITY
-    @GetMapping("/priority/{priority}")
-    public ResponseEntity<List<Task>> getByPriority(@PathVariable TaskPriority priority) {
-        return ResponseEntity.ok(
-                taskService.findByPriority(priority)
-        );
-    }
-
-
-    // SEARCH
-    @GetMapping("/search")
-    public ResponseEntity<List<Task>> searchByTitle(@RequestParam String keyword) {
-        return ResponseEntity.ok(taskService.searchByTitle(keyword));
-    }
-
-    // FILTER BY DUE DATE
-    @GetMapping("/due")
-    public ResponseEntity<List<Task>> getByDueDate(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(taskService.findByDueDate(date));
+    @PostMapping("/verify")
+    public ResponseEntity<?> verify(@RequestBody OtpRequest request){
+        String response = userService.verifyOtp(request.getEmail(),request.getOtp());
+        return ResponseEntity.ok(response);
     }
 }

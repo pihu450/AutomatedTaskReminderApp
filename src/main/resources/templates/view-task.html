@@ -8,36 +8,50 @@
 <body>
 
 <div class="header">
-    <div class="brand">Task Reminder App</div>
-    <div class="nav">
-        <a th:href="@{/api/tasks/tasks}" class="btn">Back to List</a>
-        <a th:href="@{|/api/tasks/edit/${task.id}|}" class="btn">Edit</a>
-    </div>
-</div>
+    <h2 align="center">Task Reminder Application</h2>
 
-<div class="container">
+</div>
+<br><br>
+
+<div class="task-details-wrapper">
+
     <h2>Task Details</h2>
 
-    <p><strong>Title :</strong> <span th:text="${task.title}"></span></p>
-    <p><strong>Description :</strong> <span th:text="${task.description}"></span></p>
-    <p><strong>Due Date :</strong> <span th:text="${task.dueDate}"></span></p>
+    <div class="task-details-row">
+        <strong>Title :</strong>
+        <span th:text="${task.title}"></span>
+    </div>
 
-    <p><strong>Status :</strong>
-        <span th:text="${task.status}"
-              th:class="${task.status == 'DONE'} ? 'status-done' : 'status-pending'">
-        </span>
-    </p>
+    <div class="task-details-row">
+        <strong>Description :</strong>
+        <span th:text="${task.description}"></span>
+    </div>
 
-    <p><strong>Priority :</strong>
-        <span th:text="${task.priority}"
-              th:class="${task.priority == 'HIGH'} ? 'badge badge-high' :
-                        (task.priority == 'MEDIUM' ? 'badge badge-medium' : 'badge badge-low')">
-        </span>
-    </p>
+    <div class="task-details-row">
+        <strong>Due Date :</strong>
+        <span th:text="${task.dueDate}"></span>
+    </div>
 
-    <p><strong>Created At :</strong>
+    <div class="task-details-row">
+        <strong>Status :</strong>
+        <span th:text="${task.status}"></span>
+    </div>
+
+    <div class="task-details-row">
+        <strong>Priority :</strong>
+        <span th:text="${task.priority}"></span>
+    </div>
+
+    <div class="task-details-row">
+        <strong>Created At :</strong>
         <span th:text="${task.createdAt}"></span>
-    </p>
+    </div>
+
+    <div class="task-details-actions">
+        <a th:href="@{/api/tasks/tasks}" class="btn btn-secondary">Back to List</a>
+        <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}" class="btn btn-primary">Edit</a>
+    </div>
+
 </div>
 
 </body>
