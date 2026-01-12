@@ -6,51 +6,72 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
-
-  <style>
-    body {
-        background-color: #f2f2f2;
-    }
-    .container {
-        max-width: 350px;
-        margin-top: 100px;
-        padding: 20px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-  </style>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 
-<body>
-<div class="container">
-  <h2 class="text-center mb-3">Email Verification</h2>
+<body class="verify-page">
 
-  <div th:if="${success}" class="alert alert-success text-center" th:text="${success}"></div>
-  <div th:if="${error}" class="alert alert-danger text-center" th:text="${error}"></div>
+<!-- 🔹 NAVBAR -->
+<div th:replace="~{fragments/layout :: navbar}"></div>
 
-  <form th:action="@{/verify}" th:object="${otpRequest}" method="post">
+<div class="page-content">
+  <div class="verify-container animate-entry">
 
-    <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input type="email" class="form-control"
-             th:field="*{email}" placeholder="Enter registered email" required>
-    </div>
+    <div class="verify-icon">📧</div>
 
-    <div class="mb-3">
-      <label class="form-label">OTP</label>
-      <input type="text" class="form-control"
-             th:field="*{otp}" placeholder="Enter 6-digit OTP"
-             minlength="6" maxlength="6" required>
-    </div>
-
-    <button type="submit" class="btn btn-primary w-100">Verify OTP</button>
-
-    <p class="text-center mt-3">
-      <a href="/login">Back to Login</a>
+    <h2>Email Verification</h2>
+    <p class="verify-subtitle">
+      Enter the OTP sent to your registered email
     </p>
 
-  </form>
+    <!-- FLASH MESSAGES -->
+    <div th:if="${success}"
+         class="alert alert-success text-center"
+         th:text="${success}"></div>
+
+    <div th:if="${error}"
+         class="alert alert-danger text-center"
+         th:text="${error}"></div>
+
+    <form th:action="@{/verify}"
+          th:object="${otpRequest}"
+          method="post">
+
+      <div class="mb-3">
+        <input type="email"
+               class="form-control"
+               th:field="*{email}"
+               placeholder="Registered email"
+               required>
+      </div>
+
+      <div class="mb-3">
+        <input type="text"
+               class="form-control otp-input"
+               th:field="*{otp}"
+               placeholder="Enter 6-digit OTP"
+               minlength="6"
+               maxlength="6"
+               required>
+      </div>
+
+      <button type="submit" class="btn-sky w-100">
+        🔐 Verify OTP
+      </button>
+
+      <p class="text-center mt-3">
+        <a th:href="@{/login}" class="link-sky">
+          ← Back to Login
+        </a>
+      </p>
+
+    </form>
+
+  </div>
 </div>
+
+<!-- 🔹 FOOTER -->
+<div th:replace="~{fragments/layout :: footer}"></div>
+
 </body>
 </html>

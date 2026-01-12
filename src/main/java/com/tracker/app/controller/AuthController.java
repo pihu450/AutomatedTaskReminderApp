@@ -28,12 +28,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute User user, RedirectAttributes redirect) {
+    public String register(@ModelAttribute User user,
+                           RedirectAttributes redirect) {
         try {
-            userService.register(user);
-            redirect.addFlashAttribute("success", "Account created. Please verify OTP!");
+            userService.register(user);   // ✅ password comes from user
+            redirect.addFlashAttribute(
+                    "success",
+                    "OTP sent to your email. Please verify OTP!"
+            );
             return "redirect:/verify-otp";
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             redirect.addFlashAttribute("error", ex.getMessage());
             return "redirect:/register";
         }
@@ -49,18 +53,25 @@ public class AuthController {
 
     @PostMapping("/verify")
     public String verify(@ModelAttribute OtpRequest request,
+                         Model model,
                          RedirectAttributes redirect) {
-        try {
-            String response = userService.verifyOtp(
-                    request.getEmail(),
-                    request.getOtp()
-            );
-            redirect.addFlashAttribute("success", response + " Please login.");
-            return "redirect:/login";
-        } catch (Exception ex) {
-            redirect.addFlashAttribute("error", ex.getMessage());
-            return "redirect:/verify-otp";
+
+        String result = userService.verifyOtp(
+                request.getEmail(),
+                request.getOtp()
+        );
+
+        if (!"OTP verified successfully!".equals(result)) {
+            model.addAttribute("error", result);
+            model.addAttribute("otpRequest", request);
+            return "verify-otp";
         }
+
+        redirect.addFlashAttribute(
+                "success",
+                "Email verified successfully. Please login."
+        );
+        return "redirect:/login";
     }
 
     // ================= LOGIN =================
@@ -83,23 +94,12 @@ public class AuthController {
             return "redirect:/login";
         }
     }
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-
-        if (session.getAttribute("userId") == null) {
-            return "redirect:/login";
-        }
-
-        model.addAttribute("email", session.getAttribute("email"));
-        return "dashboard";
-    }
-
 
     // ================= SESSION =================
 
     @GetMapping("/me")
     public ResponseEntity<?> me(HttpSession session) {
-        Integer userId = (Integer) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute("userId");
 
         if (userId == null) {
             return ResponseEntity.ok(Map.of("loggedIn", false));
@@ -116,10 +116,9 @@ public class AuthController {
 
     // ================= LOGOUT =================
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
     }
-
 }

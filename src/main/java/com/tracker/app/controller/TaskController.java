@@ -5,8 +5,8 @@ import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.enums.TaskStatus;
 import com.tracker.app.service.TaskService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -16,18 +16,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 @Controller
-@RequestMapping("/api/tasks/")
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     @Autowired
     private TaskService taskService;
 
-    // ✅ LIST TASKS
+    // ===================== LIST TASKS =====================
     @GetMapping("/tasks")
     public String listTasks(
             @RequestParam(defaultValue = "0") int page,
@@ -36,42 +34,48 @@ public class TaskController {
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) TaskPriority priority,
             @RequestParam(required = false) LocalDate dueDate,
-            Model model, HttpSession session) {
-        if(session.getAttribute("userId")==null){
-            return "redirect:/login";
-        }
-        List<Task> tasks=null;
-        Pageable pageable = PageRequest.of(page, size);
+            Model model,
+            HttpSession session) {
 
-        Page<Task> taskPage = taskService.filterTasks(keyword, status, priority,dueDate, pageable);
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/index";
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Task> taskPage =
+                taskService.filterTasks(userId, keyword, status, priority, dueDate, pageable);
 
         model.addAttribute("taskPage", taskPage);
         model.addAttribute("tasks", taskPage.getContent());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPage",taskPage.getTotalPages());
-        model.addAttribute("size",size);
-        int totalPages= taskPage.getTotalPages();
-        List<Integer> pageNumbers = IntStream.range(0,totalPages).boxed().toList();
-        // keep values selected in UI
+        model.addAttribute("totalPage", taskPage.getTotalPages());
+        model.addAttribute("size", size);
+
         model.addAttribute("keyword", keyword);
         model.addAttribute("status", status);
         model.addAttribute("priority", priority);
         model.addAttribute("dueDate", dueDate);
 
-
         return "tasks";
     }
 
-    // ✅ VIEW TASK
+    // ===================== VIEW TASK =====================
     @GetMapping("/view/{id}")
     public String viewTask(@PathVariable Long id,
                            Model model,
-                           RedirectAttributes ra) {
+                           RedirectAttributes ra,
+                           HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
 
         Optional<Task> taskOpt = taskService.findById(id);
 
-        if (taskOpt.isEmpty()) {
-            ra.addFlashAttribute("errorMessage", "Task not found");
+        if (taskOpt.isEmpty() || !taskOpt.get().getUserId().equals(userId)) {
+            ra.addFlashAttribute("errorMessage", "Unauthorized access");
             return "redirect:/api/tasks/tasks";
         }
 
@@ -79,43 +83,62 @@ public class TaskController {
         return "view-task";
     }
 
-    // ✅ ADD FORM
+    // ===================== ADD FORM =====================
     @GetMapping("/add")
-    public String showAddForm(Model model,HttpSession session) {
+    public String showAddForm(Model model, HttpSession session) {
+
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("task", new Task());
         return "add-task";
     }
 
-    // ✅ SAVE TASK
+    // ===================== SAVE TASK =====================
     @PostMapping("/add")
-    public String saveTask(@ModelAttribute Task task,Model model,
-                           RedirectAttributes ra,HttpSession session) {
-        if(session.getAttribute("userId")==null){
+    public String saveTask(@ModelAttribute Task task,
+                           Model model,
+                           RedirectAttributes ra,
+                           HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
             return "redirect:/login";
         }
 
-        if(task.getTitle() == null || task.getTitle().trim().isEmpty()){
-            model.addAttribute("errorMessage","Title is required");
-            model.addAttribute("task",task);
+        if (task.getTitle() == null || task.getTitle().trim().isEmpty()) {
+            model.addAttribute("errorMessage", "Title is required");
+            model.addAttribute("task", task);
             return "add-task";
         }
+
+        task.setUserId(userId);
         task.setCreatedAt(LocalDateTime.now());
+        task.setStatus(TaskStatus.PENDING);
+
         taskService.saveTask(task);
 
         ra.addFlashAttribute("successMessage", "Task added successfully");
         return "redirect:/api/tasks/tasks";
     }
 
-    // ✅ EDIT FORM
+    // ===================== EDIT FORM =====================
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id,
                                Model model,
-                               RedirectAttributes ra) {
+                               RedirectAttributes ra,
+                               HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
 
         Optional<Task> taskOpt = taskService.findById(id);
 
-        if (taskOpt.isEmpty()) {
-            ra.addFlashAttribute("errorMessage", "Task not found");
+        if (taskOpt.isEmpty() || !taskOpt.get().getUserId().equals(userId)) {
+            ra.addFlashAttribute("errorMessage", "Unauthorized access");
             return "redirect:/api/tasks/tasks";
         }
 
@@ -123,37 +146,70 @@ public class TaskController {
         return "edit-task";
     }
 
-    // ✅ UPDATE TASK
+    // ===================== UPDATE TASK =====================
     @PostMapping("/edit/{id}")
     public String updateTask(@PathVariable Long id,
                              @ModelAttribute Task task,
-                             RedirectAttributes ra) {
+                             RedirectAttributes ra,
+                             HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        Optional<Task> existingTask = taskService.findById(id);
+
+        if (existingTask.isEmpty() || !existingTask.get().getUserId().equals(userId)) {
+            ra.addFlashAttribute("errorMessage", "Unauthorized access");
+            return "redirect:/api/tasks/tasks";
+        }
 
         task.setId(id);
+        task.setUserId(userId);
+
         taskService.saveTask(task);
 
         ra.addFlashAttribute("successMessage", "Task updated successfully");
         return "redirect:/api/tasks/tasks";
     }
 
+    // ===================== MARK AS DONE =====================
     @GetMapping("/markdone/{id}")
-    public String markAsDone(@PathVariable Long id){
-        Task task = taskService.findById(id).orElse(null);
-        if(task != null && task.getStatus() != TaskStatus.DONE){
+    public String markAsDone(@PathVariable Long id, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        Optional<Task> taskOpt = taskService.findById(id);
+
+        if (taskOpt.isPresent() && taskOpt.get().getUserId().equals(userId)) {
+            Task task = taskOpt.get();
             task.setStatus(TaskStatus.DONE);
             task.setCompletedAt(LocalDateTime.now());
             taskService.saveTask(task);
         }
-        return "redirect:/api/tasks/tasks";
 
+        return "redirect:/api/tasks/tasks";
     }
-    // ✅ DELETE TASK
+
+    // ===================== DELETE TASK =====================
     @GetMapping("/delete/{id}")
     public String deleteTask(@PathVariable Long id,
-                             RedirectAttributes ra) {
+                             RedirectAttributes ra,
+                             HttpSession session) {
 
-        if (taskService.findById(id).isEmpty()) {
-            ra.addFlashAttribute("errorMessage", "Task not found");
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        Optional<Task> taskOpt = taskService.findById(id);
+
+        if (taskOpt.isEmpty() || !taskOpt.get().getUserId().equals(userId)) {
+            ra.addFlashAttribute("errorMessage", "Unauthorized access");
         } else {
             taskService.deleteTask(id);
             ra.addFlashAttribute("successMessage", "Task deleted successfully");

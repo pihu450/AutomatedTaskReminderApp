@@ -1,4 +1,6 @@
-/* ================= RESET ================= */
+/* =====================================================
+   RESET & VARIABLES
+===================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -6,339 +8,699 @@
     font-family: "Segoe UI", Arial, sans-serif;
 }
 
-/* ================= PAGE ================= */
+:root {
+    --sky-main: #38bdf8;
+    --sky-dark: #0284c7;
+    --sky-light: #e0f2fe;
+    --sky-glass: rgba(255, 255, 255, 0.75);
+    --text-dark: #0f172a;
+    --shadow-soft: 0 15px 40px rgba(56,189,248,0.25);
+    --shadow-hover: 0 25px 60px rgba(56,189,248,0.45);
+}
+
+/* =====================================================
+   BASE PAGE
+===================================================== */
 body {
-    background: linear-gradient(135deg, #eef2f7, #dfe7f3);
+    background: linear-gradient(135deg, #e0f2fe, #bae6fd, #7dd3fc);
+    min-height: 100vh;
+}
+
+.page-content {
     padding: 30px;
 }
 
-/* ================= CONTAINER ================= */
-.container {
+/* =====================================================
+   COMMON APP CONTAINER (BOOTSTRAP SAFE)
+===================================================== */
+.app-container {
     max-width: 1300px;
     margin: auto;
-    background: #ffffff;
+    background: var(--sky-glass);
+    backdrop-filter: blur(18px);
     padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    border-radius: 22px;
+    box-shadow: var(--shadow-soft);
 }
 
-/* ===============================
-   HEADING
-================================ */
-.container h2 {
-    color: #1e3a8a;
-    font-size: 26px;
+/* =====================================================
+   ANIMATIONS (GLOBAL)
+===================================================== */
+.animate-entry {
+    animation: slideFade 0.6s ease forwards;
+}
+
+@keyframes slideFade {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+/* =====================================================
+   BUTTONS & LINKS
+===================================================== */
+.btn-sky {
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--sky-dark), var(--sky-main));
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-sky:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.btn-outline-sky {
+    border: 2px solid var(--sky-main);
+    color: var(--sky-dark);
+    background: transparent;
+    font-weight: 700;
+}
+
+.btn-outline-sky:hover {
+    background: var(--sky-main);
+    color: white;
+}
+
+.link-sky {
+    color: var(--sky-dark);
     font-weight: 600;
-    margin-bottom: 25px;
-    letter-spacing: 0.8px;
-    text-align: center;
-    margin-bottom: 25px;
-    color: #1e3a8a;
+    text-decoration: none;
 }
 
-/* ================= FILTERS ================= */
+.link-sky:hover {
+    text-decoration: underline;
+}
+
+/* =====================================================
+   BADGES
+===================================================== */
+.app-badge {
+    padding: 2px 10px;
+    border-radius: 700px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+}
+
+/* ================= PRIORITY BADGES ================= */
+.badge.priority-HIGH {
+    background: #fee2e2;
+    color: #991b1b;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 8px 14px;
+}
+
+.badge.priority-MEDIUM {
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 8px 14px;
+}
+
+.badge.priority-LOW {
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 8px 14px;
+}
+
+
+/* Status */
+/* ================= STATUS BADGES ================= */
+.badge.status-PENDING {
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 8px 14px;
+}
+
+.badge.status-IN_PROGRESS {
+    background: #dbeafe;
+    color: #1e40af;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 8px 14px;
+}
+
+.badge.status-DONE{
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 8px 14px;
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.task-table th {
+    background: linear-gradient(90deg, var(--sky-dark), var(--sky-main));
+    color: white;
+    padding: 14px;
+}
+
+.task-table td {
+    padding: 14px;
+    border-bottom: 1px solid #e0f2fe;
+}
+
+.task-table tr:hover td {
+    background: #f0f9ff;
+}
+
+/* =====================================================
+   FORMS (LOGIN / REGISTER / ADD / VERIFY)
+===================================================== */
+.form-container,
+.login-container,
+.register-container,
+.verify-container {
+    max-width: 420px;
+    margin: 60px auto;
+    background: var(--sky-glass);
+    backdrop-filter: blur(18px);
+    padding: 32px;
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+}
+
+.form-container input,
+.form-container textarea,
+.form-container select,
+.login-container .form-control,
+.register-container .form-control,
+.verify-container .form-control {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 12px;
+    border: 1px solid #bae6fd;
+}
+
+.form-container input:focus,
+.form-container textarea:focus,
+.form-container select:focus,
+.login-container .form-control:focus,
+.register-container .form-control:focus,
+.verify-container .form-control:focus {
+    outline: none;
+    border-color: var(--sky-main);
+    box-shadow: 0 0 0 3px rgba(56,189,248,0.3);
+}
+
+/* OTP */
+.otp-input {
+    letter-spacing: 4px;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* =====================================================
+   HOME PAGE
+===================================================== */
+.hero-section {
+    padding: 100px 20px;
+    text-align: center;
+    position: relative;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.hero-title span {
+    color: var(--sky-dark);
+}
+
+.hero-subtitle {
+    color: #334155;
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 20px auto 35px;
+}
+
+/* Floating shapes */
+.floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(56,189,248,0.25);
+    filter: blur(40px);
+    animation: float 10s ease-in-out infinite alternate;
+}
+
+@keyframes float {
+    from { transform: translateY(0); }
+    to { transform: translateY(-40px); }
+}
+
+/* =====================================================
+   FEATURE CARDS
+===================================================== */
+.feature-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(14px);
+    padding: 30px;
+    border-radius: 22px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.35s ease;
+    text-align: center;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-hover);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+/* =====================================================
+   TASK DETAILS
+===================================================== */
+.task-details-wrapper {
+    max-width: 720px;
+    margin: 60px auto;
+}
+
+.task-card {
+    background: var(--sky-glass);
+    backdrop-filter: blur(18px);
+    padding: 30px;
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+}
+
+.task-details-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 14px;
+}
+
+.task-details-row:hover {
+    background: #f0f9ff;
+}
+
+.task-details-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 30px;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .form-container,
+    .login-container,
+    .register-container,
+    .verify-container {
+        width: 92%;
+        margin: 40px auto;
+    }
+
+    .task-details-row {
+        grid-template-columns: 1fr;
+    }
+}
+/* =====================================================
+   ALL TASKS PAGE
+===================================================== */
+
+/* Page title */
+h2 {
+    color: var(--sky-dark);
+    font-weight: 800;
+}
+
+/* =====================================================
+   FILTER BAR
+===================================================== */
 .filters {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 25px;
     align-items: center;
+    margin-bottom: 25px;
+}
+
+.filters label {
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
 .filter-input {
     padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    border: 1px solid #bae6fd;
     min-width: 150px;
 }
 
-/* ================= BUTTONS ================= */
-.btn {
-    padding: 8px 16px;
-    border-radius: 8px;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
+.filter-input:focus {
+    outline: none;
+    border-color: var(--sky-main);
+    box-shadow: 0 0 0 3px rgba(56,189,248,0.25);
 }
 
-.btn-primary   { background:#2563eb; }
-.btn-success   { background:#16a34a; }
-.btn-secondary { background:#64748b; }
-.btn:hover { opacity: 0.9; }
-
-/* ================= TABLE ================= */
-.task-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 25px;
-}
-
-.task-table th {
-    background: linear-gradient(90deg,#1e3a8a,#3b82f6);
-    color: white;
-    padding: 14px;
-    text-align: left;
-}
-
-.task-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.actions a {
-    margin-right: 6px;
-    font-weight: 600;
-    color: #2563eb;
-    text-decoration: none;
-}
-
-.actions a:hover {
-    text-decoration: underline;
-}
-
-/* ================= CALENDAR ================= */
-/* Hide calendar & selected tasks initially */
+/* =====================================================
+   CALENDAR WRAPPER
+===================================================== */
 .calendar-wrapper {
-    max-width: 780px;
-    margin: 20px auto;
-    padding: 15px;
-    background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    max-width: 520px;          /* smaller width */
+    padding: 14px;
+    margin: 16px auto;
+    border-radius: 16px;
+
+    background: var(--sky-glass);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-soft);
 
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-    transform: translateY(-10px);
-    transition: all 0.35s ease;
+    transform: translateY(-6px);
+    transition: max-height 0.4s ease, opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Open state */
 .calendar-wrapper.open {
-    max-height: 2000px;
+    max-height: 520px;         /* IMPORTANT: compact height */
     opacity: 1;
     transform: translateY(0);
 }
 
-.selected-date-box {
-    display: none;
-}
-
-/* Badges */
-.badge {
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
-    color: white;
-    margin-left: 6px;
-}
-
-/* Priority badges */
-.priority-HIGH { background: #dc2626; }
-.priority-MEDIUM { background: #f59e0b; }
-.priority-LOW { background: #16a34a; }
-
-/* Status badges */
-.status-DONE { background: #16a34a; }
-.status-PENDING { background: #f59e0b; }
-.status-IN_PROGRESS { background: #2563eb; }
-
-
+/* =====================================================
+   CALENDAR HEADER
+===================================================== */
 .calendar-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     margin-bottom: 10px;
 }
 
 .calendar-header button {
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    cursor: pointer;
-}
-
-.calendar-fix .calendar-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-weight: 700;
-    margin: 15px 0 10px;
-    color: #1e3a8a;
-}
-
-/* 🔥 MAIN GRID */
-.calendar-fix .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 14px;
-    min-height: 420px;
-}
-
-.calendar-fix .calendar-day {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 8px;
-    min-height: 110px;
-    cursor: pointer;
-    position: relative;
-    transition: 0.2s ease;
-}
-
-.calendar-fix .calendar-day:hover {
-    background: #f1f5f9;
-}
-
-.calendar-fix .calendar-day strong {
-    display: block;
-    text-align: right;
-    font-weight: 700;
-    color: #334155;
-}
-
-/* TODAY */
-.calendar-fix .calendar-day.today {
-    border: 2px solid #2563eb;
-    background: #eef2ff;
-}
-
-/* TASK INSIDE CALENDAR */
-.calendar-fix .cal-task {
-    margin-top: 4px;
-    padding: 4px 6px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #ffffff;
-}
-
-/* PRIORITY COLORS */
-.calendar-fix .cal-task.HIGH   { background: #dc2626; }
-.calendar-fix .cal-task.MEDIUM { background: #f59e0b; }
-.calendar-fix .cal-task.LOW    { background: #16a34a; }
-
-/* ================= SELECTED DATE ================= */
-
-.selected-date-box h3 {
-    margin-bottom: 10px;
-    color: #1e3a8a;
-}
-
-.selected-date-box ul {
-    list-style: none;
-}
-
-.selected-date-box li {
-    padding: 8px 10px;
+    border: none;
+    background: var(--sky-light);
+    padding: 6px 12px;
     border-radius: 8px;
-    margin-bottom: 6px;
-    font-weight: 600;
+    font-weight: 700;
+    cursor: pointer;
 }
 
-.selected-date-box li.HIGH {
-    background: #fee2e2;
-    color: #7f1d1d;
+.calendar-header span {
+    font-size: 16px;
+       font-weight: 700;
 }
 
-.selected-date-box li.MEDIUM {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.selected-date-box li.LOW {
-    background: #dcfce7;
-    color: #166534;
-}
-
-/* ================= LEGEND ================= */
+/* =====================================================
+   CALENDAR LEGEND
+===================================================== */
 .calendar-legend {
     display: flex;
     gap: 12px;
-    margin: 10px 0 15px;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
-.legend {
-    padding: 6px 14px;
+.calendar-legend .legend {
+    padding: 4px 10px;
     border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
     color: white;
 }
 
-.legend.high   { background: #dc2626; }
+.legend.high { background: #ef4444; }
 .legend.medium { background: #f59e0b; }
-.legend.low    { background: #16a34a; }
+.legend.low { background: #22c55e; }
 
-/* ================= PAGINATION ================= */
+/* =====================================================
+   CALENDAR GRID
+===================================================== */
+
+.calendar-day {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 6px;
+    min-height: 64px;        /* compact */
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.calendar-day[style*="visibility: hidden"] {
+    min-height: 64px;
+}
+
+
+/* ===== FIX CALENDAR GRID LAYOUT ===== */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 🔑 CRITICAL */
+    gap: 6px;
+    width: 100%;
+}
+
+/* Today highlight */
+.calendar-day.today {
+    border: 2px solid var(--sky-main);
+    background: var(--sky-light);
+}
+
+.calendar-day:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-soft);
+}
+
+
+
+.calendar-day strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* Task chips inside calendar */
+.cal-task {
+    margin-top: 2px;
+    padding: 2px 4px;
+    font-size: 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.cal-task.HIGH { background: #ef4444; }
+.cal-task.MEDIUM { background: #f59e0b; }
+.cal-task.LOW { background: #22c55e; }
+
+/* =====================================================
+   SELECTED DATE TASK BOX
+===================================================== */
+.selected-date-box {
+   display: none;
+       max-width: 520px;          /* same as calendar */
+       margin: 10px auto 20px;
+       padding: 14px;
+       border-radius: 14px;
+
+       background: rgba(255,255,255,0.85);
+       backdrop-filter: blur(12px);
+       box-shadow: var(--shadow-soft);
+}
+
+
+.selected-date-box h3 {
+    font-size: 15px;
+        color: var(--sky-dark);
+        margin-bottom: 8px;
+}
+
+.selected-date-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.selected-date-box li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+
+
+/* =====================================================
+   TASK TABLE
+===================================================== */
+/* ================= TASK TABLE – ALT THEME ================= */
+.task-table {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+/* Header */
+.task-table th {
+    background: linear-gradient(90deg, #0f766e, #14b8a6);
+    color: #ecfeff;
+    padding: 14px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* Body */
+.task-table td {
+    background: rgba(240, 253, 250, 0.7);
+    color: #134e4a;
+    padding: 14px;
+    border-bottom: 1px solid #99f6e4;
+}
+
+/* Hover row */
+.task-table tr:hover td {
+    background: #ccfbf1;
+}
+
+/* Actions */
+.task-table .actions a {
+    color: #0f766e;
+    font-weight: 700;
+}
+
+.task-table .actions a:hover {
+    color: #115e59;
+    text-decoration: underline;
+}
+
+/* =====================================================
+   PAGINATION
+===================================================== */
 .pagination {
-    margin-top: 25px;
+    margin: 30px 0;
     display: flex;
     justify-content: center;
-    gap: 12px;
+    align-items: center;
+    gap: 14px;
 }
 
-/* Selected date task meta */
-.selected-date-box li .meta {
-    margin-left: 8px;
-    font-size: 13px;
-    font-weight: 500;
+.pagination span {
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
-/* Status color hint */
-.selected-date-box li .meta b {
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .calendar-grid {
+        gap: 8px;
+    }
+
+    .calendar-day {
+        min-height: 90px;
+    }
+}
+/* ================= FILTER ACTION BUTTONS ================= */
+
+/* Common button base */
+.filters .btn {
+    padding: 10px 18px;
+    border-radius: 12px;
     font-weight: 700;
+    border: none;
+    transition: all 0.25s ease;
 }
-/* ===== BADGES (Selected Date Tasks) ===== */
 
-.selected-date-box .badge {
-    display: inline-block;
-    margin-left: 8px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
+/* SEARCH */
+.filters .btn-secondary {
+    background: linear-gradient(135deg, #64748b, #475569);
+    color: #fff;
+}
+
+.filters .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(100,116,139,0.4);
+}
+
+/* ADD TASK */
+.filters .btn-success {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+}
+
+.filters .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(34,197,94,0.45);
+}
+
+/* CLEAR */
+.filters .btn-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+}
+
+.filters .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(37,99,235,0.45);
+}
+
+/* OPEN CALENDAR (already good but refine) */
+#toggleCalendarBtn {
+    background: linear-gradient(135deg, #6366f1, #22d3ee);
+    color: #fff;
     font-weight: 700;
+    border-radius: 14px;
+    padding: 10px 18px;
 }
 
-/* ================= TASK DETAILS PAGE ================= */
-
-.task-details-wrapper {
-    max-width: 800px;          /* 🔹 control width */
-    margin: 40px auto;         /* center horizontally */
-    background: #ffffff;
-    padding: 30px 40px;
-    border-radius: 18px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+#toggleCalendarBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(99,102,241,0.45);
 }
-
-.task-details-wrapper h2 {
-    text-align: center;
-    color: #1e3a8a;
-    margin-bottom: 25px;
-}
-
-/* label + value alignment */
-.task-details-row {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 12px;
-    margin-bottom: 14px;
-    font-size: 16px;
-}
-
-.task-details-row strong {
-    color: #0f172a;
-}
-
-/* buttons alignment */
-.task-details-actions {
-    margin-top: 25px;
-    text-align: center;
-}
-
-
-

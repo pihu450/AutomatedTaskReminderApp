@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+
 public class User {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -16,11 +17,10 @@ public class User {
     @Column(unique=true)
     private String email;
     private String password;
-
+    @Transient
+    private String confirmPassword;
     private boolean verified = false;
-
     private String otp;
-
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime otpExpiry ;
 
@@ -29,11 +29,12 @@ public class User {
 
     }
 
-    public User( String name, String email, String password, boolean verified, String otp, LocalDateTime createdAt,LocalDateTime otpExpiry) {
+    public User( String name, String email, String password,String confirmPassword, boolean verified, String otp, LocalDateTime createdAt,LocalDateTime otpExpiry) {
 
         this.name = name;
         this.email = email;
         this.password = password;
+        this.confirmPassword=confirmPassword;
         this.verified = verified;
         this.otp = otp;
         this.createdAt = createdAt;
@@ -67,6 +68,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 
     public boolean isVerified() {

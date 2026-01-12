@@ -10,6 +10,8 @@
 </head>
 
 <body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
 <h2 align="center">TASK REMINDER APPLICATION </h2><br>
 
 <div class="container">
@@ -59,7 +61,12 @@
                th:value="${keyword}"/>
 
         <button type="submit" class="btn btn-secondary">Search</button>
-        <a th:href="@{/api/tasks/add}" class="btn btn-success">Add Task</a>
+        <a th:if="${session.userId != null}"
+           th:href="@{/api/tasks/add}"
+           class="btn btn-success">
+            Add Task
+        </a>
+
         <a th:href="@{/api/tasks/tasks}" class="btn btn-primary">Clear</a>
         <button type="button"
                 id="toggleCalendarBtn"
@@ -128,16 +135,32 @@
             <td th:text="${task.title}"></td>
             <td th:text="${task.description}"></td>
             <td th:text="${#temporals.format(task.dueDate, 'dd-MM-yyyy')}"></td>
-            <td th:text="${task.status}"></td>
-            <td th:text="${task.priority}"></td>
+            <td>
+    <span class="badge"
+          th:text="${task.status}"
+          th:classappend="' status-' + ${task.status}">
+    </span>
+            </td>
+
+            <td>
+    <span class="badge"
+          th:text="${task.priority}"
+          th:classappend="' priority-' + ${task.priority}">
+    </span>
+            </td>
             <td th:text="${#temporals.format(task.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+
             <td class="actions">
                 <a th:href="@{/api/tasks/view/{id}(id=${task.id})}">View</a>
-                <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">Edit</a>
-                <a th:href="@{/api/tasks/markdone/{id}(id=${task.id})}">Mark Done</a>
-                <a th:href="@{/api/tasks/delete/{id}(id=${task.id})}"
-                   onclick="return confirm('Delete this task?');">Delete</a>
+
+                <span th:if="${session.userId != null}">
+        <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">Edit</a>
+        <a th:href="@{/api/tasks/markdone/{id}(id=${task.id})}">Mark Done</a>
+        <a th:href="@{/api/tasks/delete/{id}(id=${task.id})}"
+           onclick="return confirm('Delete this task?');">Delete</a>
+    </span>
             </td>
+
         </tr>
         </tbody>
     </table>
@@ -153,7 +176,7 @@
         priority=${priority},
         dueDate=${dueDate}
    )}"
-           class="btn btn-secondary">
+           class="btn btn-sky">
             Previous
         </a>
 
@@ -170,7 +193,7 @@
         priority=${priority},
         dueDate=${dueDate}
    )}"
-           class="btn btn-secondary">
+           class="btn btn-sky">
             Next
         </a>
 
@@ -199,6 +222,7 @@
     }
 
     let currentDate = new Date();
+    let selectedDate = null;
 
     function renderCalendar() {
         const grid = document.getElementById("calendarGrid");
@@ -214,6 +238,7 @@
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+        // Empty cells
         for (let i = 0; i < firstDay; i++) {
             const empty = document.createElement("div");
             empty.className = "calendar-day";
@@ -225,6 +250,9 @@
             const cell = document.createElement("div");
             cell.className = "calendar-day";
 
+            const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+
+            // Today highlight
             if (
                 day === today.getDate() &&
                 month === today.getMonth() &&
@@ -233,44 +261,58 @@
                 cell.classList.add("today");
             }
 
+            // Selected date highlight
+            if (selectedDate === dateStr) {
+                cell.style.outline = "2px solid #6366f1";
+            }
+
             cell.innerHTML = `<strong>${day}</strong>`;
-            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 
-          cell.onclick = () => {
-    document.querySelector(".selected-date-box").style.display = "block";
+            /* CLICK ON DATE */
+            cell.onclick = () => {
+                selectedDate = dateStr;
 
-    const list = document.getElementById("selectedTaskList");
-    const title = document.getElementById("selectedDateTitle");
-    list.innerHTML = "";
-    title.innerText = `📌 Tasks on ${dateStr}`;
+                const calendarOpen =
+                    document.querySelector(".calendar-wrapper").classList.contains("open");
 
-    let found = false;
+                if (!calendarOpen) return; // 🔒 IMPORTANT
 
-    tasks.forEach(t => {
-        if (formatDate(t.dueDate) === dateStr) {
-            const li = document.createElement("li");
+                const box = document.querySelector(".selected-date-box");
+                const list = document.getElementById("selectedTaskList");
+                const title = document.getElementById("selectedDateTitle");
 
-            li.innerHTML = `
-                <strong>${t.title}</strong>
-                <span class="badge priority-${t.priority}">${t.priority}</span>
-                <span class="badge status-${t.status}">
-                    ${t.status.replace("_"," ")}
-                </span>
-            `;
+                box.style.display = "block";
+                list.innerHTML = "";
+                title.innerText = `📌 Tasks on ${dateStr}`;
 
-            list.appendChild(li);
-            found = true;
-        }
-    });
+                let found = false;
 
-    if (!found) {
-        const li = document.createElement("li");
-        li.style.color = "#64748b";
-        li.innerText = "No tasks for this date";
-        list.appendChild(li);
-    }
-};
+                tasks.forEach(t => {
+                    if (formatDate(t.dueDate) === dateStr) {
+                        const li = document.createElement("li");
+                        li.innerHTML = `
+                            <strong>${t.title}</strong>
+                            <span class="badge priority-${t.priority}">${t.priority}</span>
+                            <span class="badge status-${t.status}">
+                                ${t.status.replace("_"," ")}
+                            </span>
+                        `;
+                        list.appendChild(li);
+                        found = true;
+                    }
+                });
 
+                if (!found) {
+                    const li = document.createElement("li");
+                    li.style.color = "#64748b";
+                    li.innerText = "No tasks for this date";
+                    list.appendChild(li);
+                }
+
+                renderCalendar(); // re-render to highlight selected date
+            };
+
+            /* TASK DOTS */
             tasks.forEach(t => {
                 if (formatDate(t.dueDate) === dateStr) {
                     const taskDiv = document.createElement("div");
@@ -286,36 +328,43 @@
 
     document.getElementById("prevMonth").onclick = () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
+        renderCalendar();
     };
 
     document.getElementById("nextMonth").onclick = () => {
         currentDate.setMonth(currentDate.getMonth() + 1);
-         renderCalendar();
+        renderCalendar();
     };
-
-
 </script>
+
 <script>
-    const toggleBtn = document.getElementById("toggleCalendarBtn");
-    const calendarWrapper = document.querySelector(".calendar-wrapper");
+    document.addEventListener("DOMContentLoaded", () => {
 
-    let isCalendarOpen = false;
+        const toggleBtn = document.getElementById("toggleCalendarBtn");
+        const calendarWrapper = document.querySelector(".calendar-wrapper");
+        const selectedBox = document.querySelector(".selected-date-box");
 
-    toggleBtn.onclick = () => {
-        isCalendarOpen = !isCalendarOpen;
+        let isCalendarOpen = false;
 
-        if (isCalendarOpen) {
-            calendarWrapper.classList.add("open");
-            toggleBtn.innerText = "❌ Close Calendar";
-            renderCalendar(); // render only when opened
-        } else {
-            calendarWrapper.classList.remove("open");
-            toggleBtn.innerText = "📅 Open Calendar";
-        }
-    };
+        toggleBtn.onclick = () => {
+            isCalendarOpen = !isCalendarOpen;
+
+            if (isCalendarOpen) {
+                calendarWrapper.classList.add("open");
+                selectedBox.style.display = "block";
+                toggleBtn.innerText = "❌ Close Calendar";
+                setTimeout(renderCalendar, 150);
+            } else {
+                calendarWrapper.classList.remove("open");
+                selectedBox.style.display = "none";
+                toggleBtn.innerText = "📅 Open Calendar";
+            }
+        };
+    });
 </script>
 
+
+<div th:replace="~{fragments/layout :: footer}"></div>
 
 </body>
 </html>

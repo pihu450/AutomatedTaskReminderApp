@@ -5,6 +5,7 @@ import com.tracker.app.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -24,9 +25,22 @@ public class UserService {
 
     public User register(User user) {
 
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
-        }
+       Optional<User> existingUserOpt = userRepository.findByEmail(user.getEmail());
+       if(existingUserOpt.isPresent()){
+           User existingUser = existingUserOpt.get();
+
+           if(existingUser.isVerified()){
+               throw new RuntimeException("Email already registered");
+           }
+
+           int otp = 100000 + (int)(Math.random()* 900000);
+           existingUser.setOtp(String.valueOf(otp));
+           existingUser.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+
+           emailService.sendOTP(existingUser.getEmail(),existingUser.getOtp());
+
+           return userRepository.save(existingUser);
+       }
 
         user.setVerified(false);
 
@@ -36,8 +50,10 @@ public class UserService {
 
         emailService.sendOTP(user.getEmail(), user.getOtp());
 
+
         return userRepository.save(user);
     }
+
 
     public String verifyOtp(String email, String otp) {
 
@@ -86,7 +102,7 @@ public class UserService {
         }
 
         session.setAttribute("userId", user.getId());
-        session.setAttribute("email", user.getEmail());
+        session.setAttribute("name", user.getName());
     }
 }
 

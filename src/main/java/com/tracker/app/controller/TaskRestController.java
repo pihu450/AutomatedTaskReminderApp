@@ -36,6 +36,7 @@ public class TaskRestController {
     @GetMapping
     public ResponseEntity<Page<Task>> getTasks(
             Pageable pageable,
+            @RequestParam(required = false)Integer userId,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) TaskPriority priority,
@@ -43,6 +44,7 @@ public class TaskRestController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate) {
 
         Page<Task> taskPage = taskService.filterTasks(
+                userId,
                 keyword,
                 status,
                 priority,

@@ -14,31 +14,49 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // 🔴 IMPORTANT: TASK OWNER
+    @Column(nullable = false)
+    private Integer userId;
+
     private String title;
     private String description;
+
     @Column(nullable = false)
     private LocalDate dueDate;
+
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
+
     @Enumerated(EnumType.STRING)
     private TaskPriority priority;
+
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
 
     public Task() {
     }
 
-    public Task(String title, String description, LocalDate dueDate,
-                TaskStatus status, TaskPriority priority, LocalDateTime createdAt, LocalDateTime completedAt) {
+    public Task(Integer userId,
+                String title,
+                String description,
+                LocalDate dueDate,
+                TaskStatus status,
+                TaskPriority priority,
+                LocalDateTime createdAt,
+                LocalDateTime completedAt) {
 
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.status = status;
         this.priority = priority;
         this.createdAt = createdAt;
-        this.completedAt=completedAt;
+        this.completedAt = completedAt;
     }
+
+    // ================= GETTERS & SETTERS =================
 
     public Long getId() {
         return id;
@@ -46,6 +64,14 @@ public class Task {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getTitle() {
