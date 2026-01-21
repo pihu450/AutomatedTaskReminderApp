@@ -1,5 +1,6 @@
 package com.tracker.app.service;
 
+import com.tracker.app.dto.UpdateProfileRequest;
 import com.tracker.app.entity.User;
 import com.tracker.app.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -104,5 +105,28 @@ public class UserService {
         session.setAttribute("userId", user.getId());
         session.setAttribute("name", user.getName());
     }
+    public User getUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public void updateProfile(Integer userId,
+                              UpdateProfileRequest dto,
+                              String fileName) {
+
+        User user = userRepository.findById(userId).orElseThrow();
+
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+
+        // save image name only if uploaded
+        if (fileName != null) {
+            user.setProfileImage(fileName);
+        }
+
+        userRepository.save(user);
+    }
+
+
 }
 

@@ -1,8 +1,10 @@
 package com.tracker.app.controller;
 
 import com.tracker.app.entity.Task;
+import com.tracker.app.entity.User;
 import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.enums.TaskStatus;
+import com.tracker.app.repository.UserRepository;
 import com.tracker.app.service.TaskService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private UserRepository userRepository;
 
     // ===================== LIST TASKS =====================
     @GetMapping("/tasks")
@@ -74,7 +78,7 @@ public class TaskController {
 
         Optional<Task> taskOpt = taskService.findById(id);
 
-        if (taskOpt.isEmpty() || !taskOpt.get().getUserId().equals(userId)) {
+        if (taskOpt.isEmpty() || !taskOpt.get().getUser().getId().equals(userId)) {
             ra.addFlashAttribute("errorMessage", "Unauthorized access");
             return "redirect:/api/tasks/tasks";
         }
@@ -112,8 +116,9 @@ public class TaskController {
             model.addAttribute("task", task);
             return "add-task";
         }
-
-        task.setUserId(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        task.setUser(user);
         task.setCreatedAt(LocalDateTime.now());
         task.setStatus(TaskStatus.PENDING);
 
@@ -137,7 +142,7 @@ public class TaskController {
 
         Optional<Task> taskOpt = taskService.findById(id);
 
-        if (taskOpt.isEmpty() || !taskOpt.get().getUserId().equals(userId)) {
+        if (taskOpt.isEmpty() || !taskOpt.get().getUser().getId().equals(userId)) {
             ra.addFlashAttribute("errorMessage", "Unauthorized access");
             return "redirect:/api/tasks/tasks";
         }
@@ -149,7 +154,7 @@ public class TaskController {
     // ===================== UPDATE TASK =====================
     @PostMapping("/edit/{id}")
     public String updateTask(@PathVariable Long id,
-                             @ModelAttribute Task task,
+                             @ModelAttribute Task formTask,
                              RedirectAttributes ra,
                              HttpSession session) {
 
@@ -158,17 +163,22 @@ public class TaskController {
             return "redirect:/login";
         }
 
-        Optional<Task> existingTask = taskService.findById(id);
+        Task existingTask = taskService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
 
-        if (existingTask.isEmpty() || !existingTask.get().getUserId().equals(userId)) {
+        if (!existingTask.getUser().getId().equals(userId)) {
             ra.addFlashAttribute("errorMessage", "Unauthorized access");
             return "redirect:/api/tasks/tasks";
         }
 
-        task.setId(id);
-        task.setUserId(userId);
+        // ✅ update ONLY allowed fields
+        existingTask.setTitle(formTask.getTitle());
+        existingTask.setDescription(formTask.getDescription());
+        existingTask.setDueDate(formTask.getDueDate());
+        existingTask.setPriority(formTask.getPriority());
+        existingTask.setStatus(formTask.getStatus());
 
-        taskService.saveTask(task);
+        taskService.saveTask(existingTask);
 
         ra.addFlashAttribute("successMessage", "Task updated successfully");
         return "redirect:/api/tasks/tasks";
@@ -185,12 +195,15 @@ public class TaskController {
 
         Optional<Task> taskOpt = taskService.findById(id);
 
-        if (taskOpt.isPresent() && taskOpt.get().getUserId().equals(userId)) {
+        if (taskOpt.isPresent() &&
+                taskOpt.get().getUser().getId().equals(userId)) {
+
             Task task = taskOpt.get();
             task.setStatus(TaskStatus.DONE);
             task.setCompletedAt(LocalDateTime.now());
             taskService.saveTask(task);
         }
+
 
         return "redirect:/api/tasks/tasks";
     }
@@ -208,12 +221,15 @@ public class TaskController {
 
         Optional<Task> taskOpt = taskService.findById(id);
 
-        if (taskOpt.isEmpty() || !taskOpt.get().getUserId().equals(userId)) {
+        if (taskOpt.isEmpty() ||
+                !taskOpt.get().getUser().getId().equals(userId)) {
+
             ra.addFlashAttribute("errorMessage", "Unauthorized access");
         } else {
             taskService.deleteTask(id);
             ra.addFlashAttribute("successMessage", "Task deleted successfully");
         }
+
 
         return "redirect:/api/tasks/tasks";
     }

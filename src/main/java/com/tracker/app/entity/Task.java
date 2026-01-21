@@ -1,5 +1,6 @@
 package com.tracker.app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.enums.TaskStatus;
 import jakarta.persistence.*;
@@ -15,14 +16,15 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔴 IMPORTANT: TASK OWNER
-    @Column(nullable = false)
-    private Integer userId;
+    // ✅ TASK OWNER (ONLY THIS)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    private User user;
 
     private String title;
     private String description;
 
-    @Column(nullable = false)
     private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)
@@ -37,41 +39,24 @@ public class Task {
     public Task() {
     }
 
-    public Task(Integer userId,
-                String title,
-                String description,
-                LocalDate dueDate,
-                TaskStatus status,
-                TaskPriority priority,
-                LocalDateTime createdAt,
-                LocalDateTime completedAt) {
-
-        this.userId = userId;
-        this.title = title;
-        this.description = description;
-        this.dueDate = dueDate;
-        this.status = status;
-        this.priority = priority;
-        this.createdAt = createdAt;
-        this.completedAt = completedAt;
-    }
-
     // ================= GETTERS & SETTERS =================
 
     public Long getId() {
         return id;
     }
 
+    // ❌ You actually don't need setId if you update managed entity
+    // but keeping it is fine
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getTitle() {

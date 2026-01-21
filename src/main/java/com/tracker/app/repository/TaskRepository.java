@@ -16,10 +16,10 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    // ================= FILTER TASKS (USER-SPECIFIC) =================
+    // ================= FILTER TASKS =================
     @Query("""
         SELECT t FROM Task t
-        WHERE t.userId = :userId
+        WHERE t.user.id = :userId
           AND (:keyword IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
           AND (:status IS NULL OR t.status = :status)
           AND (:priority IS NULL OR t.priority = :priority)
@@ -35,12 +35,25 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     );
 
     // ================= DASHBOARD COUNTS =================
-    long countByUserId(Integer userId);
+    long countByUser_Id(Integer userId);
 
-    long countByUserIdAndStatus(Integer userId, TaskStatus status);
+    long countByUser_IdAndStatus(Integer userId, TaskStatus status);
 
-    long countByUserIdAndPriority(Integer userId, TaskPriority priority);
+    long countByUser_IdAndPriority(Integer userId, TaskPriority priority);
+
+    @Query("""
+        SELECT COUNT(t)
+        FROM Task t
+        WHERE t.user.id = :userId
+          AND t.dueDate < :today
+          AND t.status <> :doneStatus
+    """)
+    long countOverdueTasks(
+            @Param("userId") Integer userId,
+            @Param("today") LocalDate today,
+            @Param("doneStatus") TaskStatus doneStatus
+    );
 
     // ================= RECENT TASKS =================
-    List<Task> findTop5ByUserIdOrderByCreatedAtDesc(Integer userId);
+    List<Task> findTop5ByUser_IdOrderByCreatedAtDesc(Integer userId);
 }

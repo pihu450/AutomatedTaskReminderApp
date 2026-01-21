@@ -16,6 +16,7 @@ public class User {
 
     @Column(unique=true)
     private String email;
+    private String profileImage;
     private String password;
     @Transient
     private String confirmPassword;
@@ -29,7 +30,7 @@ public class User {
 
     }
 
-    public User( String name, String email, String password,String confirmPassword, boolean verified, String otp, LocalDateTime createdAt,LocalDateTime otpExpiry) {
+    public User( String name, String email,String profileImage, String password,String confirmPassword, boolean verified, String otp, LocalDateTime createdAt,LocalDateTime otpExpiry) {
 
         this.name = name;
         this.email = email;
@@ -61,7 +62,13 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+    public String getProfileImage() {
+        return profileImage;
+    }
 
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
     public String getPassword() {
         return password;
     }

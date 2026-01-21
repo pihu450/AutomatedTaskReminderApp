@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
+
 <!-- ================= NAVBAR FRAGMENT ================= -->
 <div th:fragment="navbar">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
@@ -11,20 +12,23 @@
             <div class="collapse navbar-collapse justify-content-end">
 
                 <!-- LOGGED IN -->
-                <ul class="navbar-nav" th:if="${session.userId != null}">
-                    <li class="nav-item">
-                        <span class="navbar-text text-white me-3">
-                            Welcome,
-                            <b th:text="${session.name != null ? session.name : 'User'}"></b>!
-                        </span>
+                <ul class="navbar-nav align-items-center" th:if="${session.userId != null}">
+                    <li class="nav-item me-3 text-white">
+                        Welcome,
+                        <b th:text="${session.name != null ? session.name : 'User'}"></b>!
                     </li>
 
                     <li class="nav-item me-2">
-                        <a class="btn btn-outline-light" href="/dashboard">Dashboard</a>
+                        <span id="liveClock" class="text-white me-2">--:--:--</span>
+                        <a href="/profile" class="btn btn-outline-light btn-sm">Profile</a>
+                    </li>
+
+                    <li class="nav-item me-2">
+                        <a class="btn btn-outline-light btn-sm" href="/dashboard">Dashboard</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="btn btn-danger" href="/logout">Logout</a>
+                        <a class="btn btn-danger btn-sm" href="/logout">Logout</a>
                     </li>
                 </ul>
 
@@ -43,7 +47,6 @@
     </nav>
 </div>
 
-
 <!-- ================= FOOTER FRAGMENT ================= -->
 <div th:fragment="footer">
     <footer class="bg-dark text-white text-center py-3 mt-5">
@@ -52,5 +55,24 @@
         </p>
     </footer>
 </div>
+<script>
+    function updateClock() {
+        const now = new Date();
+
+        let h = now.getHours();
+        let m = now.getMinutes();
+        let s = now.getSeconds();
+
+        h = h < 10 ? "0" + h : h;
+        m = m < 10 ? "0" + m : m;
+        s = s < 10 ? "0" + s : s;
+
+        document.getElementById("liveClock").innerText =
+            h + ":" + m + ":" + s;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+</script>
 
 </html>
