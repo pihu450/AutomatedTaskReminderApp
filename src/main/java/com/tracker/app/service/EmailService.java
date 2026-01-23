@@ -1,5 +1,6 @@
 package com.tracker.app.service;
 
+import com.tracker.app.entity.Task;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -70,5 +71,14 @@ public class EmailService {
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send OTP", e);
         }
+    }
+
+    public void sendTaskReminder(Task task){
+        String to = task.getUser().getEmail();
+        String subject = "Task Reminder : "+ task.getTitle();
+        String body = "Hi "+ task.getUser().getName() + ",\n\n" +
+                "Your task \"" +task.getTitle() + "\" is due at " +
+                task.getDueDate() + ".\nPlease complete it on time.\n\n" +
+                "Task Reminder App";
     }
 }

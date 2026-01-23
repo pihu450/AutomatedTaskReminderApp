@@ -74,12 +74,18 @@
             📅 Open Calendar
         </button>
     </form>
+    <a th:href="@{/api/tasks/export(exportway='download')}"
+       class="btn btn-outline-primary">
+        Export CSV
+    </a>
+    <a th:href="@{/api/tasks/export/email}"
+       class="btn btn-outline-success">
+        Export CSV to Email
+    </a>
 
 
     <!-- ================= CALENDAR ================= -->
     <div class="calendar-wrapper calendar-fix">
-
-
 
     <h3>📅 Task Calendar</h3>
 

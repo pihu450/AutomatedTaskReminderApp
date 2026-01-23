@@ -6,10 +6,14 @@ import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.enums.TaskStatus;
 import com.tracker.app.repository.TaskRepository;
 import com.tracker.app.repository.UserRepository;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,6 +31,8 @@ public class TaskService {
     public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Autowired
     private UserRepository userRepository;
@@ -87,6 +93,11 @@ public class TaskService {
     }
     public long countByUser_IdAndPriority(Integer userId, TaskPriority priority) {
         return taskRepository.countByUser_IdAndPriority(userId, priority);
+
+    }
+
+    public List<Task> getTasksByUser(Integer userId){
+        return taskRepository.findByUserId(userId);
     }
 
 
@@ -102,4 +113,53 @@ public class TaskService {
     public List<Task> getRecentTasks(Integer userId) {
         return taskRepository.findTop5ByUser_IdOrderByCreatedAtDesc(userId);
     }
+
+    public void sendTasksCsvByEmail(List<Task> tasks, Integer userId) throws Exception {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String csvData = generateCsv(tasks);
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper =
+                new MimeMessageHelper(message, true);
+
+        helper.setTo(user.getEmail());
+        helper.setSubject("Your Task List (CSV Export)");
+        helper.setText("Please find attached your task list.");
+
+        helper.addAttachment("tasks.csv",
+                new ByteArrayResource(csvData.getBytes()));
+
+        mailSender.send(message);
+    }
+
+    // ================= CSV GENERATOR =================
+    private String generateCsv(List<Task> tasks) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("ID,Title,Description,Status,Priority,Due Date,Created At,Completed At\n");
+
+        for (Task task : tasks) {
+            sb.append(task.getId()).append(",")
+                    .append(escape(task.getTitle())).append(",")
+                    .append(escape(task.getDescription())).append(",")
+                    .append(task.getStatus()).append(",")
+                    .append(task.getPriority()).append(",")
+                    .append(task.getDueDate()).append(",")
+                    .append(task.getCreatedAt()).append(",")
+                    .append(task.getCompletedAt()).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private String escape(String value) {
+        if (value == null) return "";
+        return "\"" + value.replace("\"", "\"\"") + "\"";
+    }
+
+
 }
+

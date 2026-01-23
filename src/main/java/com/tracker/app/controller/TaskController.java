@@ -6,7 +6,9 @@ import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.enums.TaskStatus;
 import com.tracker.app.repository.UserRepository;
 import com.tracker.app.service.TaskService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.tomcat.util.security.Escape;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +18,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -85,6 +90,67 @@ public class TaskController {
 
         model.addAttribute("task", taskOpt.get());
         return "view-task";
+    }
+@GetMapping("/export")
+public void exportTasksToCsv(HttpServletResponse response, HttpSession session,@RequestParam String exportway ) throws IOException{
+        Integer userId = (Integer) session.getAttribute("userId");
+        if(userId== null){
+            response.sendRedirect("/login");
+            return;
+        }
+        if("download".equals(exportway)){
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition","attachment; filename=tasks.csv");
+        }
+        List<Task> tasks = taskService.getTasksByUser(userId);
+
+    PrintWriter writer = response.getWriter();
+
+    writer.println("ID, Title, Description,Status,Priority,Due Date,Created At,Completed At");
+
+    for(Task task : tasks){
+        writer.println(
+                task.getId() + ","+
+                        escape(task.getTitle())+","+
+                        escape(task.getDescription()) + "," +
+                        task.getStatus() +","+
+                        task.getPriority() + ","+
+                        task.getDueDate() +","+
+                        task.getCreatedAt() + "," +
+                        task.getCompletedAt()
+
+        );
+    }
+    writer.flush();
+    writer.close();
+
+}
+private String escape (String value){
+        if(value == null) return "";
+        return "\"" + value.replace("\"","\"\"")+ "\"";
+}
+    @GetMapping("/export/email")
+    public String exportTasksToEmail(HttpSession session,
+                                     RedirectAttributes ra) {
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            List<Task> tasks = taskService.getTasksByUser(userId);
+            taskService.sendTasksCsvByEmail(tasks, userId);
+
+            ra.addFlashAttribute("successMessage",
+                    "Tasks exported and sent to your email successfully");
+
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMessage",
+                    "Failed to send email");
+        }
+
+        return "redirect:/api/tasks/tasks";
     }
 
     // ===================== ADD FORM =====================

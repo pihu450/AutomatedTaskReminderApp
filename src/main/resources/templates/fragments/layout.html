@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-
 <!-- ================= NAVBAR FRAGMENT ================= -->
 <div th:fragment="navbar">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
@@ -45,6 +44,31 @@
             </div>
         </div>
     </nav>
+
+    <!-- ✅ CLOCK SCRIPT MUST BE INSIDE FRAGMENT -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            function updateClock() {
+                const clock = document.getElementById("liveClock");
+                if (!clock) return;
+
+                const now = new Date();
+                let h = now.getHours();
+                let m = now.getMinutes();
+                let s = now.getSeconds();
+
+                h = h < 10 ? "0" + h : h;
+                m = m < 10 ? "0" + m : m;
+                s = s < 10 ? "0" + s : s;
+
+                clock.innerText = h + ":" + m + ":" + s;
+            }
+
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
 </div>
 
 <!-- ================= FOOTER FRAGMENT ================= -->
@@ -55,24 +79,5 @@
         </p>
     </footer>
 </div>
-<script>
-    function updateClock() {
-        const now = new Date();
-
-        let h = now.getHours();
-        let m = now.getMinutes();
-        let s = now.getSeconds();
-
-        h = h < 10 ? "0" + h : h;
-        m = m < 10 ? "0" + m : m;
-        s = s < 10 ? "0" + s : s;
-
-        document.getElementById("liveClock").innerText =
-            h + ":" + m + ":" + s;
-    }
-
-    updateClock();
-    setInterval(updateClock, 1000);
-</script>
 
 </html>

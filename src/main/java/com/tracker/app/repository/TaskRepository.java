@@ -56,4 +56,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     // ================= RECENT TASKS =================
     List<Task> findTop5ByUser_IdOrderByCreatedAtDesc(Integer userId);
+
+    List<Task> findByUserId(Integer userId);
 }
