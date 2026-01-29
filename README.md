@@ -21,7 +21,7 @@ This application helps users create, manage, and track tasks efficiently with fe
 ---
 
 ## 🛠️ Technologies Used
-- **Backend:** Java, Spring Boot
+- **Backend:** Java, Spring Boot, Hibernate(ORM)
 - **Frontend:** Thymeleaf, HTML, CSS, Bootstrap
 - **Database:** MySQL
 - **Testing:** JUnit, Mockito
