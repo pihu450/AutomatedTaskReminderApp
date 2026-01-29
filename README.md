@@ -1,6 +1,6 @@
 # Automated Task Reminder & Tracking Application
 
-A web-based Task Management System developed using **Spring Boot**, **Thymeleaf**, and **MySQL**.  
+A web-based Automated Task Reminder and Tracking Application developed using **Spring Boot**, **Thymeleaf**, and **MySQL**.  
 This application helps users create, manage, and track tasks efficiently with features like authentication, email notifications, and task reminders.
 
 ---
@@ -15,7 +15,6 @@ This application helps users create, manage, and track tasks efficiently with fe
 - Task Reminder using Spring Scheduler
 - Export Tasks to CSV
 - User Profile Management
-- Dark Theme Support
 - REST APIs for task operations
 - Unit Testing using JUnit & Mockito
 
