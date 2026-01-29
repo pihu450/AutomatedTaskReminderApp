@@ -25,7 +25,7 @@
     <textarea th:field="*{description} " required> </textarea><br><br>
 
     <label>Due Date:</label>
-    <input type="date" th:field="*{dueDate}" required><br><br>
+    <input type="datetime-local" th:field="*{dueDate}" required><br><br>
 
     <label>Status:</label>
     <select th:field="*{status}" required>

@@ -35,7 +35,7 @@
                       placeholder="Short task description"></textarea>
 
             <label>Due Date</label>
-            <input type="date" th:field="*{dueDate}" required
+            <input type="datetime-local" th:field="*{dueDate}" required
                    th:attr="min=${#dates.format(#dates.createNow(),'yyyy-MM-dd')}">
 
             <label>Status</label>

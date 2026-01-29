@@ -656,13 +656,7 @@ h2 {
         align-items: stretch;
     }
 
-    .calendar-grid {
-        gap: 8px;
-    }
 
-    .calendar-day {
-        min-height: 90px;
-    }
 }
 /* ================= FILTER ACTION BUTTONS ================= */
 
@@ -720,4 +714,464 @@ h2 {
 #toggleCalendarBtn:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(99,102,241,0.45);
+}
+/* =====================================================
+   FINAL PREMIUM ANIMATION SYSTEM
+===================================================== */
+
+:root{
+    --ease-main: cubic-bezier(.4,0,.2,1);
+    --ease-soft: cubic-bezier(.2,.8,.2,1);
+}
+
+/* ---------- PAGE LOAD ---------- */
+body{
+    animation: pageEnter .9s var(--ease-main);
+}
+
+@keyframes pageEnter{
+    from{opacity:0;transform:translateY(32px)}
+    to{opacity:1;transform:none}
+}
+
+/* ---------- SECTION ENTRANCE ---------- */
+.app-container,
+.hero-section,
+.task-details-wrapper,
+.filters,
+.task-table,
+.feature-card,
+.task-card,
+.form-container,
+.login-container,
+.register-container,
+.verify-container{
+    animation: sectionEnter .9s var(--ease-main) both;
+}
+
+@keyframes sectionEnter{
+    from{
+        opacity:0;
+        transform:translateY(50px) scale(.97);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+/* ---------- HERO TEXT ---------- */
+.hero-title{
+    animation: heroTitle .9s var(--ease-soft);
+}
+
+.hero-subtitle{
+    animation: heroTitle 1.2s var(--ease-soft);
+}
+
+@keyframes heroTitle{
+    from{opacity:0;transform:translateY(40px)}
+    to{opacity:1;transform:none}
+}
+
+/* ---------- CARDS (TASK + FEATURE) ---------- */
+.task-card,
+.feature-card{
+    transition:
+        transform .6s var(--ease-soft),
+        box-shadow .6s var(--ease-soft);
+}
+
+.task-card:hover,
+.feature-card:hover{
+    transform:translateY(-18px) scale(1.06);
+    box-shadow:0 30px 70px rgba(56,189,248,.45);
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-sky,
+.filters .btn,
+#toggleCalendarBtn{
+    transition:
+        transform .35s var(--ease-soft),
+        box-shadow .35s var(--ease-soft);
+}
+
+.btn-sky:hover,
+.filters .btn:hover,
+#toggleCalendarBtn:hover{
+    transform:translateY(-6px) scale(1.04);
+}
+
+/* ---------- FORMS ---------- */
+.form-container input,
+.form-container textarea,
+.form-container select{
+    transition:transform .35s var(--ease-soft);
+}
+
+.form-container input:focus,
+.form-container textarea:focus,
+.form-container select:focus{
+    transform:translateY(-4px);
+}
+
+/* ---------- TABLE ---------- */
+.task-table tbody tr{
+    animation: tableRow .45s var(--ease-main) both;
+}
+
+.task-table tbody tr:nth-child(1){animation-delay:.05s}
+.task-table tbody tr:nth-child(2){animation-delay:.1s}
+.task-table tbody tr:nth-child(3){animation-delay:.15s}
+.task-table tbody tr:nth-child(4){animation-delay:.2s}
+
+@keyframes tableRow{
+    from{opacity:0;transform:translateX(-25px)}
+    to{opacity:1;transform:none}
+}
+
+/* ---------- CALENDAR ---------- */
+.calendar-day{
+    transition:
+        transform .4s var(--ease-soft),
+        box-shadow .4s var(--ease-soft);
+}
+
+.calendar-day:hover{
+    transform:translateY(-10px) scale(1.06);
+}
+
+.calendar-day.today{
+    animation: todayGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes todayGlow{
+    from{box-shadow:0 0 0 rgba(56,189,248,.3)}
+    to{box-shadow:0 0 45px rgba(56,189,248,.7)}
+}
+
+/* ---------- BADGES ---------- */
+.badge{
+    animation: badgeIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes badgeIn{
+    from{opacity:0;transform:scale(.7)}
+    to{opacity:1;transform:scale(1)}
+}
+
+/* ---------- SELECTED DATE ---------- */
+.selected-date-box{
+    animation: fadeLift .6s var(--ease-main);
+}
+
+@keyframes fadeLift{
+    from{opacity:0;transform:translateY(25px)}
+    to{opacity:1;transform:none}
+}
+/* =====================================================
+   SCROLL-BASED REVEAL (CSS-ONLY)
+===================================================== */
+
+/* Default hidden state */
+.app-container,
+.hero-section,
+.feature-card,
+.task-card,
+.task-table,
+.filters,
+.form-container,
+.login-container,
+.register-container,
+.verify-container {
+    opacity: 0;
+    transform: translateY(60px);
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 20% cover 40%;
+}
+
+@keyframes reveal {
+    from {
+        opacity: 0;
+        transform: translateY(60px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* =====================================================
+   PARALLAX DEPTH (SUBTLE, PREMIUM)
+===================================================== */
+
+/* Background depth */
+body {
+    background-attachment: fixed;
+}
+
+/* Floating shapes parallax */
+.floating-shape {
+    animation: parallaxFloat 18s ease-in-out infinite alternate;
+}
+
+@keyframes parallaxFloat {
+    from {
+        transform: translateY(0) translateX(0);
+    }
+    to {
+        transform: translateY(-80px) translateX(30px);
+    }
+}
+
+/* Hero depth */
+.hero-section {
+    perspective: 1000px;
+}
+
+.hero-title {
+    transform: translateZ(40px);
+}
+
+.hero-subtitle {
+    transform: translateZ(20px);
+}
+
+/* Card depth illusion */
+.task-card,
+.feature-card {
+    transform-style: preserve-3d;
+}
+
+.task-card:hover,
+.feature-card:hover {
+    transform: translateY(-18px) scale(1.05) rotateX(3deg);
+}
+
+/* =====================================================
+   DARK MODE (ANIMATED)
+===================================================== */
+
+/* Dark mode trigger (HTML or BODY class) */
+body.dark-mode {
+    background: linear-gradient(135deg, #020617, #020617, #020617);
+    transition: background 0.6s ease;
+}
+
+/* Glass containers */
+body.dark-mode .app-container,
+body.dark-mode .task-card,
+body.dark-mode .feature-card,
+body.dark-mode .calendar-wrapper,
+body.dark-mode .form-container,
+body.dark-mode .login-container,
+body.dark-mode .register-container,
+body.dark-mode .verify-container {
+    background: rgba(15, 23, 42, 0.75);
+    color: #e5e7eb;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    transition: all 0.6s ease;
+}
+
+/* Text */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode p,
+body.dark-mode label {
+    color: #e5e7eb;
+}
+
+/* Buttons */
+body.dark-mode .btn-sky {
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+}
+
+/* Inputs */
+body.dark-mode .form-container input,
+body.dark-mode .form-container textarea,
+body.dark-mode .form-container select,
+body.dark-mode .login-container input,
+body.dark-mode .register-container input,
+body.dark-mode .verify-container input,
+body.dark-mode .form-control {
+    background: rgba(2, 6, 23, 0.8) !important;
+    color: #e5e7eb !important;
+    border-color: #334155;
+}
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: #94a3b8;
+}
+
+/* Fix autofill (Chrome issue) */
+body.dark-mode input:-webkit-autofill {
+    -webkit-text-fill-color: #e5e7eb;
+    box-shadow: 0 0 0 1000px rgba(2, 6, 23, 0.9) inset;
+}
+/* Table */
+body.dark-mode .task-table th {
+    background: linear-gradient(90deg, #020617, #020617);
+    color: #e5e7eb;
+}
+
+body.dark-mode .task-table td {
+    background: rgba(15,23,42,0.7);
+    color: #e5e7eb;
+}
+
+/* Calendar */
+body.dark-mode .calendar-day {
+    background: rgba(15,23,42,0.85);
+    color: #e5e7eb;
+}
+
+/* Smooth mode transition */
+body,
+.app-container,
+.task-card,
+.feature-card,
+.calendar-wrapper,
+.task-table,
+.form-container {
+    transition: background 0.6s ease,
+                color 0.6s ease,
+                box-shadow 0.6s ease,
+                transform 0.6s ease;
+}
+/* =====================================================
+   DARK MODE – CALENDAR & SELECTED TASK FIX
+===================================================== */
+
+/* Selected date task box */
+body.dark-mode .selected-date-box {
+    background: rgba(15, 23, 42, 0.85);
+    color: #e5e7eb;
+}
+
+/* Selected date title */
+body.dark-mode .selected-date-box h3,
+body.dark-mode .selected-date-box h5 {
+    color: #93c5fd;
+}
+
+/* Calendar weekdays text */
+body.dark-mode .calendar-weekdays {
+    color: #cbd5f5;
+}
+
+/* Calendar legend text */
+body.dark-mode .calendar-legend .legend {
+    color: #020617;
+}
+
+/* Calendar task chips text fix */
+body.dark-mode .cal-task {
+    color: #020617;
+    font-weight: 600;
+}
+
+/* Badge contrast inside selected box */
+body.dark-mode .selected-date-box .badge {
+    color: #020617;
+}
+/* =====================================================
+   DARK MODE – PROFILE PAGE (BOOTSTRAP CARD FIX)
+===================================================== */
+
+/* Card background */
+body.dark-mode .card {
+    background: rgba(15, 23, 42, 0.85) !important;
+    color: #e5e7eb;
+    border: none;
+}
+
+/* Card body */
+body.dark-mode .card-body {
+    color: #e5e7eb;
+}
+
+/* Profile heading */
+body.dark-mode .card-body h3 {
+    color: #93c5fd;
+}
+
+/* Labels (Name, Email) */
+body.dark-mode .form-label {
+    color: #cbd5f5;
+}
+
+/* Plain text values */
+body.dark-mode .form-control-plaintext {
+    color: #e5e7eb !important;
+}
+
+/* Success alert */
+body.dark-mode .alert-success {
+    background: rgba(22, 163, 74, 0.2);
+    color: #bbf7d0;
+    border-color: rgba(22, 163, 74, 0.4);
+}
+
+/* Buttons */
+body.dark-mode .btn-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: none;
+}
+
+body.dark-mode .btn-secondary {
+    background: #475569;
+    border: none;
+    color: #fff;
+}
+/* =====================================================
+   NAVBAR – PROFESSIONAL RESPONSIVE FIX
+===================================================== */
+
+/* Desktop: keep Bootstrap default */
+@media (min-width: 992px) {
+    .navbar-nav {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .navbar-nav .nav-item {
+        white-space: nowrap;
+    }
+}
+
+/* Mobile behavior */
+@media (max-width: 991px) {
+
+    .navbar {
+        padding: 12px 16px;
+    }
+
+    .navbar-collapse {
+        margin-top: 12px;
+        text-align: center;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        gap: 10px;
+    }
+
+    .navbar-nav .nav-item {
+        width: 100%;
+    }
+
+    .navbar-nav .btn,
+    .navbar-nav button,
+    .navbar-nav a {
+        width: 100%;
+    }
+
+    #liveClock {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
 }

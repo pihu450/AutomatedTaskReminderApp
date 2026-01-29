@@ -73,10 +73,13 @@ public class ProfileController {
     public String updateProfile(
             @Valid UpdateProfileRequest dto,
             BindingResult result,
+            User user,
             @RequestParam("image") MultipartFile image,
             HttpSession session,
             RedirectAttributes redirectAttributes,
             Model model) {
+
+
 
         Object idObj = session.getAttribute("userId");
         if (idObj == null) {
@@ -89,6 +92,7 @@ public class ProfileController {
             model.addAttribute("profile", dto);
             return "profile-edit";
         }
+
 
         // ================= IMAGE UPLOAD CODE (ADD HERE) =================
 
@@ -120,7 +124,10 @@ public class ProfileController {
         }
 
         // ================= SERVICE CALL =================
-        userService.updateProfile(userId, dto, fileName);
+        User updatedUser = userService.updateProfile(userId, dto, fileName);
+
+        /* ================= 🔥 UPDATE SESSION 🔥 ================= */
+        session.setAttribute("name", updatedUser.getName());
 
         redirectAttributes.addFlashAttribute(
                 "successMessage", "Profile updated successfully!"

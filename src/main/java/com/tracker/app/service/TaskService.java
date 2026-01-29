@@ -104,7 +104,7 @@ public class TaskService {
     public long countOverdue(Integer userId) {
         return taskRepository.countOverdueTasks(
                 userId,
-                LocalDate.now(),
+                LocalDateTime.now(),
                 TaskStatus.DONE
         );
     }

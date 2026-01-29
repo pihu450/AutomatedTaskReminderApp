@@ -3,44 +3,52 @@
 
 <!-- ================= NAVBAR FRAGMENT ================= -->
 <div th:fragment="navbar">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg sky-navbar">
         <div class="container-fluid">
 
-            <a class="navbar-brand" href="/dashboard">Task Reminder</a>
+            <!-- Brand -->
+            <a class="navbar-brand fw-bold" href="/dashboard">
+                Task Reminder
+            </a>
 
-            <div class="collapse navbar-collapse justify-content-end">
+            <!-- Toggle button (ONLY for mobile) -->
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <!-- LOGGED IN -->
-                <ul class="navbar-nav align-items-center" th:if="${session.userId != null}">
-                    <li class="nav-item me-3 text-white">
+            <!-- Collapsible content -->
+            <div class="collapse navbar-collapse justify-content-end" id="mainNavbar">
+
+                <ul class="navbar-nav align-items-lg-center gap-lg-2">
+
+                    <li class="nav-item text-white fw-semibold">
                         Welcome,
-                        <b th:text="${session.name != null ? session.name : 'User'}"></b>!
-                    </li>
-
-                    <li class="nav-item me-2">
-                        <span id="liveClock" class="text-white me-2">--:--:--</span>
-                        <a href="/profile" class="btn btn-outline-light btn-sm">Profile</a>
-                    </li>
-
-                    <li class="nav-item me-2">
-                        <a class="btn btn-outline-light btn-sm" href="/dashboard">Dashboard</a>
+                        <b>Chaitanya</b>
                     </li>
 
                     <li class="nav-item">
-                        <a class="btn btn-danger btn-sm" href="/logout">Logout</a>
+                        <span id="liveClock" class="text-white">01:07:40</span>
                     </li>
-                </ul>
 
-                <!-- NOT LOGGED IN -->
-                <ul class="navbar-nav" th:if="${session.userId == null}">
-                    <li class="nav-item me-2">
-                        <a class="btn btn-outline-light" href="/login">Login</a>
-                    </li>
                     <li class="nav-item">
-                        <a class="btn btn-warning" href="/register">Register</a>
+                        <a class="btn btn-outline-light btn-sm" href="#">Profile</a>
                     </li>
-                </ul>
 
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm" href="#">Dashboard</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <button class="btn btn-sky btn-sm">🌙</button>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="btn btn-danger btn-sm" href="#">Logout</a>
+                    </li>
+
+                </ul>
             </div>
         </div>
     </nav>
@@ -68,7 +76,49 @@
             updateClock();
             setInterval(updateClock, 1000);
         });
+
+
+
     </script>
+    <script>
+        (function () {
+    const body = document.body;
+    const toggleBtn = document.getElementById("themeToggle");
+
+    if (!toggleBtn) return; // ✅ SAFE GUARD
+
+    const savedTheme = localStorage.getItem("theme");
+    const systemPrefersDark =
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+        body.classList.add("dark-mode");
+        toggleBtn.textContent = "☀️";
+    } else {
+        toggleBtn.textContent = "🌙";
+    }
+
+    toggleBtn.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+
+        const isDark = body.classList.contains("dark-mode");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+
+        toggleBtn.textContent = isDark ? "☀️" : "🌙";
+    });
+
+    window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", e => {
+            if (!localStorage.getItem("theme")) {
+                body.classList.toggle("dark-mode", e.matches);
+                toggleBtn.textContent = e.matches ? "☀️" : "🌙";
+            }
+        });
+})();
+
+    </script>
+
 </div>
 
 <!-- ================= FOOTER FRAGMENT ================= -->

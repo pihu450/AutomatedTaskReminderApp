@@ -110,11 +110,12 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public void updateProfile(Integer userId,
+    public User updateProfile(Integer userId,
                               UpdateProfileRequest dto,
                               String fileName) {
 
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
@@ -124,8 +125,9 @@ public class UserService {
             user.setProfileImage(fileName);
         }
 
-        userRepository.save(user);
+        return userRepository.save(user); // 🔥 RETURN UPDATED USER
     }
+
 
 
 }

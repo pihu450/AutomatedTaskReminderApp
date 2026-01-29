@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -42,20 +43,42 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     long countByUser_IdAndPriority(Integer userId, TaskPriority priority);
 
     @Query("""
-        SELECT COUNT(t)
-        FROM Task t
-        WHERE t.user.id = :userId
-          AND t.dueDate < :today
-          AND t.status <> :doneStatus
-    """)
+SELECT COUNT(t)
+FROM Task t
+WHERE t.user.id = :userId
+AND t.dueDate < :now
+AND t.status <> :doneStatus
+""")
     long countOverdueTasks(
             @Param("userId") Integer userId,
-            @Param("today") LocalDate today,
+            @Param("now") LocalDateTime now,
             @Param("doneStatus") TaskStatus doneStatus
     );
+
 
     // ================= RECENT TASKS =================
     List<Task> findTop5ByUser_IdOrderByCreatedAtDesc(Integer userId);
 
     List<Task> findByUserId(Integer userId);
+    @Query("""
+SELECT t FROM Task t
+JOIN FETCH t.user
+WHERE t.dueDate BETWEEN :now AND :next30Min
+AND t.reminderSent = false
+""")
+    List<Task> findTasksForReminder(
+            @Param("now") LocalDateTime now,
+            @Param("next30Min") LocalDateTime next30Min
+    );
+
+    @Query("""
+        SELECT t FROM Task t
+        JOIN FETCH t.user
+        WHERE t.dueDate < :now
+          AND t.status <> 'DONE'
+          AND t.missedNotified = false
+    """)
+    List<Task> findMissedTasks(
+            @Param("now") LocalDateTime now
+    );
 }

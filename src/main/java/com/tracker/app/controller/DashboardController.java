@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +38,25 @@ public class DashboardController {
         }
 
 
+        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         List<Task> recentTasks = taskService.getRecentTasks(userId);
 
-        long overdue = recentTasks.stream().filter(t -> t.getDueDate() != null &&
-                t.getDueDate().isBefore(LocalDate.now()) &&
-                t.getStatus() != TaskStatus.DONE).count();
-        long dueToday = recentTasks.stream().filter(t -> t.getDueDate() != null &&
-                t.getDueDate().isEqual(LocalDate.now())).count();
+        long overdue = recentTasks.stream()
+                .filter(t -> t.getDueDate() != null)
+                .filter(t -> t.getDueDate().isBefore(now))
+                .filter(t -> t.getStatus() != TaskStatus.DONE)
+                .count();
 
-        List<Task> recent = recentTasks.stream().sorted((a,b) -> b.getCreatedAt().compareTo(a.getCreatedAt())).limit(5).collect(Collectors.toList());
+        long dueToday = recentTasks.stream()
+                .filter(t -> t.getDueDate() != null)
+                .filter(t -> t.getDueDate().toLocalDate().isEqual(today))
+                .count();
+
+        List<Task> recent = recentTasks.stream()
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+                .limit(5)
+                .collect(Collectors.toList());
 
 
         model.addAttribute("totalTasks", taskService.countByUser_Id(userId));

@@ -25,7 +25,7 @@ public class Task {
     private String title;
     private String description;
 
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
@@ -35,6 +35,9 @@ public class Task {
 
     private LocalDateTime createdAt;
     private LocalDateTime completedAt;
+    @Column(nullable = false)
+    private boolean reminderSent = false;
+    private boolean missedNotified;
 
     public Task() {
     }
@@ -75,11 +78,11 @@ public class Task {
         this.description = description;
     }
 
-    public LocalDate getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDate dueDate) {
+    public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -113,5 +116,21 @@ public class Task {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public boolean isReminderSent() {
+        return reminderSent;
+    }
+
+    public void setReminderSent(boolean reminderSent) {
+        this.reminderSent = reminderSent;
+    }
+
+    public boolean isMissedNotified() {
+        return missedNotified;
+    }
+
+    public void setMissedNotified(boolean missedNotified) {
+        this.missedNotified = missedNotified;
     }
 }
